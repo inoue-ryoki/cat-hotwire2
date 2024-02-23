@@ -3,7 +3,16 @@ class CatsController < ApplicationController
 
   # GET /cats
   def index
-    @cats = Cat.page(params[:page])
+    # `Cat.ransack`でCatに対してransackを使う
+    # params[:q]には検索フォームで指定した検索条件が入る
+    @search = Cat.ransack(params[:q])
+
+    # デフォルトのソートをid降順にする
+    @search.sorts = 'id desc' if @search.sorts.empty?
+
+    # `@search.result`で検索結果となる@catsを取得する
+    # 検索結果に対してはkaminariのpageメソッドをチェーンできる
+    @cats = @search.result.page(params[:page])
   end
 
   # GET /cats/1
